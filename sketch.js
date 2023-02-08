@@ -1,102 +1,91 @@
-let selectedColor, red, orange, yellow, green, blue, white, pink, black;
+let spriteSheet1, spriteSheet2, spriteSheet3;
+
+let walkingAnimation1;
+
+function preload() {
+ spriteSheet1 = loadImage('Images/spelunkyGuy.png');
+ spriteSheet2 = loadImage('Images/greenGirl.png');
+ spriteSheet3 = loadImage('Images/roundGirl.png');
+}
+
 
 function setup() {
-    createCanvas(800, 800);
-    background(255);
-    selectedColor = 0;
-    red = new selectShade(0, "red");
-    orange = new selectShade(50, "orange");
-    yellow = new selectShade(100, "yellow");
-    green = new selectShade(150, "green");
-    blue = new selectShade(200, "blue");
-    white = new selectShade(250, "white");
-    pink = new selectShade(300, "pink")
-    black = new selectShade(350, "black");
+    createCanvas(400,400);
+    imageMode(CENTER);
+
+    walkingAnimation1 = new WalkingAnimation(spriteSheet1, 80, 80, 200, 200, 9);
+    walkingAnimation2 = new WalkingAnimation(spriteSheet2, 80, 80, 100, 100, 9);
+    walkingAnimation3 = new WalkingAnimation(spriteSheet3, 80, 80, 300, 300, 9);
 }
 
 function draw(){
-    if(mouseIsPressed){
-        drawing();
-    }
-    red.appear();
-    red.mouseClicked();
-    orange.appear();
-    yellow.appear();
-    green.appear();
-    blue.appear();
-    white.appear();
-    pink.appear();
-    black.appear();
+    background(220);
+
+    walkingAnimation1.draw();
+    walkingAnimation2.draw();
+    walkingAnimation3.draw();
 }
 
-class selectShade {
-    constructor(whichColor, shade){
-        this.x = 0;
-        this.y = whichColor;
-        this.width = 50;
-        this.height = 50;
-        this.shade = shade;
+function keyPressed(){
+    walkingAnimation1.keyPressed();
+    walkingAnimation2.keyPressed();
+    walkingAnimation3.keyPressed();
+}
+
+function keyReleased(){
+    walkingAnimation1.keyReleased();
+    walkingAnimation2.keyReleased();
+    walkingAnimation3.keyReleased();
+}
+
+class WalkingAnimation {
+    constructor(spriteSheet, sw, sh, dx, dy, animationLength) {
+        this.spriteSheet = spriteSheet;
+        this.sw = sw;
+        this.sh = sh;
+        this.dx = dx;
+        this.dy = dy;
+        this.u = 0 
+        this.v = 0;
+        this.animationLength = animationLength;
+        this.currentFrame = 0;
+        this.moving = 0;
+        this.xDirection = 1;
     }
 
-    appear(){
-        push();
+    draw () {
+    this.u = (this.moving != 0) ? this.currentFrame % this.animationLength : 0;
 
-            if(this.shade != "white")
-            {
-                noStroke();
-            }
+    push();
+    translate(this.dx, this.dy);
+    scale(this.xDirection, 1);
 
-            fill(this.shade);
-            rect(this.x, this.y, this.width, this.height);
-        pop();
+    image(this.spriteSheet, 0, 0, this.sw, this.sh, this.u*this.sw, this.v*this.sh, this.sw, this.sh); 
+    pop();
+    if (frameCount % 6 == 0) 
+    {
+    this.currentFrame++;
+    }
+    this.dx += this.moving;
     }
 
-    mouseClicked(){
-        if(mouseIsPressed)
-        {
-            if (mouseX < 50)
-            {
-                if (mouseY > 0 && mouseY < 50)
-                {
-                    selectedColor = "red";
-                }
-                else if (mouseY > 50 && mouseY < 100)
-                {
-                    selectedColor = "orange";
-                }
-                else if (mouseY > 100 && mouseY < 150)
-                {
-                    selectedColor = "yellow";
-                }
-                else if (mouseY > 150 && mouseY < 200)
-                {
-                    selectedColor = "green";
-                }
-                else if (mouseY > 200 && mouseY < 250)
-                {
-                    selectedColor = "blue";
-                }
-                else if (mouseY > 250 && mouseY < 300)
-                {
-                    selectedColor = "white";
-                }
-                else if (mouseY > 300 && mouseY < 350)
-                {
-                    selectedColor = "pink";
-                }
-                else if (mouseY > 350 && mouseY < 400)
-                {
-                    selectedColor = "black";
-                }
-            }
+    keyPressed(){
+        if (keyCode === RIGHT_ARROW)
+    {
+        this.moving = 1;
+        this.xDirection = 1;
+        this.currentFrame = 1;
+    }
+    else if (keyCode === LEFT_ARROW) {
+        this.moving = -1;
+        this.xDirection = -1;
+        this.currentFrame = 1;
+    }
+    }
+
+    keyReleased(){
+        if (keyCode === RIGHT_ARROW || keyCode === LEFT_ARROW) {
+            this.moving = 0;
         }
     }
-}
-
-function drawing() {
-    push();
-    strokeWeight(15);
-    stroke(selectedColor);
-    line(pmouseX, pmouseY, mouseX, mouseY);
-    pop();   
 }
