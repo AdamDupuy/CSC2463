@@ -8,6 +8,12 @@ let spriteSheetFilenames = ["Images/AdamsBug.png"];
 let spriteSheets = [];
 let animations = [];
 
+let hitSound = new Tone.Player('Sounds/bruh.mp3');
+let gameOverSound = new Tone.Player('Sounds/gameOver.mp3');
+let introSong = new Tone.Player('Sounds/introSong.mp3');
+let mainTheme = new Tone.Player('Sounds/mainTheme.mp3');
+let missSound = new Tone.Player('Sounds/nopeSound.mp3');
+
 const GameState = {
    Start: "Start",
    Playing: "Playing",
@@ -27,7 +33,11 @@ function preload() {
 function setup() {
     createCanvas(400,400);
     imageMode(CENTER);
-
+    hitSound.toDestination();
+    gameOverSound.toDestination();
+    introSong.toDestination();
+    mainTheme.toDestination();
+    missSound.toDestination();
     reset();
 }
 
@@ -36,7 +46,7 @@ function reset() {
     game.elapsedTime = 0;
     game.score = 0;
     game.totalSprites = random(10,30);
-    
+
     for(let i=0; i< game.totalSprites; i++)
     {
         animations[i] = new WalkingAnimation(random(spriteSheets), 80, 80, random (100,300), random (100, 300), 7, random(1, 5), 12, random([0,1]));
@@ -65,7 +75,8 @@ function draw(){
             game.state = GameState.GameOver; 
             }
         break;
-        case GameState.GameOver: 
+        case GameState.GameOver:
+        mainTheme.start(); 
         game.maxScore = max(game.score, game.maxScore);
         background(0);
         fill(255);
@@ -82,6 +93,7 @@ function draw(){
         text("Bug Smasher", 20, 50);
         textSize(20);
         text("Press any key to start smashing bugs.", 20, 300);
+
         break;
     }
 }
@@ -90,10 +102,12 @@ function keyPressed() {
     switch(game.state){
         case GameState.Start:
             game.state = GameState.Playing;
+            mainTheme.start();
         break;
         case GameState.GameOver:
             reset();
             game.state = GameState.Playing;
+            mainTheme.start;    
         break;
     }
 }
@@ -115,7 +129,11 @@ function mousePressed() {
                         }
                     }
                     game.score++;
-                }
+                    hitSound.start();
+                }                
+            }
+            else{
+                missSound.start();
             }
         }
         break;
