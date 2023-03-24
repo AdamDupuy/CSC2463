@@ -22,6 +22,8 @@ synth.connect(reverb);
 drum.connect(reverb);
 metal.connect(reverb);
 
+
+
 let notes = {
 
     'a':'C4',
